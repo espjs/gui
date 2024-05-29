@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,14 +16,19 @@ namespace espjs_gui
         public string? Modules { get; set; }
         public int BaudRate { get; set; }
         public Dictionary<string, string>? Flash { get; set; }
+        public ArrayList? Ignore { get; set; }
 
         public static 配置 加载配置()
         {
             string 当前执行文件 = System.Reflection.Assembly.GetExecutingAssembly().Location;
             string 当前目录 = Directory.GetParent(当前执行文件).FullName;
-#pragma warning disable CS8603 // 可能返回 null 引用。
-            return JsonConvert.DeserializeObject<配置>(File.ReadAllText(当前目录 + @"\配置.json"));
-#pragma warning restore CS8603 // 可能返回 null 引用。
+            string 配置内容 = File.ReadAllText(当前目录 + @"\配置.json");
+            var 用户配置 = JsonConvert.DeserializeObject<配置>(配置内容);
+            if (用户配置 == null)
+            {
+                return new 配置();
+            }
+            return 用户配置;
         }
 
         public static bool 检测配置文件是否存在()

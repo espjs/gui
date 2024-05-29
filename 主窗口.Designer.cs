@@ -112,6 +112,7 @@
             // 
             // 日志文本框
             // 
+            日志文本框.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             日志文本框.Location = new Point(12, 72);
             日志文本框.Multiline = true;
             日志文本框.Name = "日志文本框";
@@ -169,6 +170,8 @@
             Controls.Add(label1);
             Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
+            MaximumSize = new Size(513, 800);
+            MinimumSize = new Size(513, 100);
             Name = "主窗口";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "espjs 图形化工具";

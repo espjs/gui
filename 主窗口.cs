@@ -170,7 +170,24 @@ namespace espjs_gui
 
         private void 写入设备按钮_Click(object sender, EventArgs e)
         {
-            串口助手.将目录写入设备(选择串口.Text, 项目选择框.Text);
+            清空日志();
+            var 用户配置 = 配置.加载配置();
+            var 串口号 = 选择串口.Text;
+            var 开发板 = 开发板选择框.Text;
+            var 波特率 = 用户配置.提取波特率(开发板);
+            var 项目目录 = 项目选择框.Text;
+            if (!项目目录.EndsWith(@"\"))
+            {
+                项目目录 += @"\";
+            }
+            new Thread(() =>
+            {
+                串口助手.将目录写入设备(串口号, 波特率, 项目目录, (消息) =>
+                {
+                    显示日志(消息 + "\r\n");
+                });
+            }).Start();
+
         }
     }
 }
