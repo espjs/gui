@@ -10,11 +10,6 @@ namespace espjs_gui
             InitializeComponent();
         }
 
-        private void 项目目录输入框_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
         private void 主窗口_Load(object sender, EventArgs e)
         {
             刷新串口();
@@ -47,12 +42,6 @@ namespace espjs_gui
             }
         }
 
-        private void 项目目录输入框_MouseUp(object sender, MouseEventArgs e)
-        {
-            // 显示目录选择对话框
-
-        }
-
         private void 刷新串口()
         {
             选择串口.Items.Clear();
@@ -70,6 +59,16 @@ namespace espjs_gui
         private void 烧录固件按钮_Click(object sender, EventArgs e)
         {
             清空日志();
+            if (选择串口.Text == "")
+            {
+                显示日志("请输入或选择串口号\r\n");
+                return;
+            }
+            if (开发板选择框.Text == "")
+            {
+                显示日志("请输入或选择开发板类型\r\n");
+                return;
+            }
             命令行.烧录固件(选择串口.Text, 开发板选择框.Text, (string 输出) =>
             {
                 显示日志(输出 + "\r\n");
@@ -106,6 +105,16 @@ namespace espjs_gui
         private void 清除设备代码按钮_Click(object sender, EventArgs e)
         {
             清空日志();
+            if (选择串口.Text == "")
+            {
+                显示日志("请输入或选择串口号\r\n");
+                return;
+            }
+            if (开发板选择框.Text == "")
+            {
+                显示日志("请输入或选择开发板类型\r\n");
+                return;
+            }
             串口助手.清除代码(选择串口.Text, 开发板选择框.Text, (string 输出) =>
             {
                 显示日志(输出 + "\r\n");
@@ -128,20 +137,6 @@ namespace espjs_gui
                     项目选择框.Items.Add(目录);
                 }
             }
-        }
-
-        private void 项目选择框_TextChanged(object sender, EventArgs e)
-        {
-        }
-
-        private void 项目选择框_SelectionChangeCommitted(object sender, EventArgs e)
-        {
-
-        }
-
-        private void 项目选择框_DropDownClosed(object sender, EventArgs e)
-        {
-
         }
 
         private void 选择目录按钮_Click(object sender, EventArgs e)
@@ -176,6 +171,19 @@ namespace espjs_gui
             var 开发板 = 开发板选择框.Text;
             var 波特率 = 用户配置.提取波特率(开发板);
             var 项目目录 = 项目选择框.Text;
+            if (串口号 == "") {
+                显示日志("请输入或选择串口号\r\n");
+                return;
+            }
+            if (开发板 == "") {
+                显示日志("请输入或选择开发板类型\r\n");
+                return;
+            }
+            if (项目目录 == "")
+            {
+                显示日志("请输入或选择项目目录\r\n");
+                return;
+            }
             if (!项目目录.EndsWith(@"\"))
             {
                 项目目录 += @"\";
@@ -189,5 +197,6 @@ namespace espjs_gui
             }).Start();
 
         }
+
     }
 }

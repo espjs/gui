@@ -113,11 +113,11 @@
             // 日志文本框
             // 
             日志文本框.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            日志文本框.Location = new Point(12, 72);
+            日志文本框.Location = new Point(12, 74);
             日志文本框.Multiline = true;
             日志文本框.Name = "日志文本框";
             日志文本框.ScrollBars = ScrollBars.Vertical;
-            日志文本框.Size = new Size(476, 297);
+            日志文本框.Size = new Size(476, 295);
             日志文本框.TabIndex = 10;
             // 
             // 清除设备代码按钮
@@ -138,9 +138,6 @@
             项目选择框.Size = new Size(252, 25);
             项目选择框.TabIndex = 13;
             项目选择框.DropDown += 项目选择框_DropDown;
-            项目选择框.SelectionChangeCommitted += 项目选择框_SelectionChangeCommitted;
-            项目选择框.DropDownClosed += 项目选择框_DropDownClosed;
-            项目选择框.TextChanged += 项目选择框_TextChanged;
             // 
             // 选择目录按钮
             // 
