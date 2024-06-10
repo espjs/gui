@@ -40,6 +40,8 @@
             清除设备代码按钮 = new Button();
             项目选择框 = new ComboBox();
             选择目录按钮 = new Button();
+            发送代码按钮 = new Button();
+            代码输入框 = new TextBox();
             SuspendLayout();
             // 
             // label1
@@ -117,7 +119,7 @@
             日志文本框.Multiline = true;
             日志文本框.Name = "日志文本框";
             日志文本框.ScrollBars = ScrollBars.Vertical;
-            日志文本框.Size = new Size(476, 295);
+            日志文本框.Size = new Size(476, 262);
             日志文本框.TabIndex = 10;
             // 
             // 清除设备代码按钮
@@ -149,11 +151,33 @@
             选择目录按钮.UseVisualStyleBackColor = true;
             选择目录按钮.Click += 选择目录按钮_Click;
             // 
+            // 发送代码按钮
+            // 
+            发送代码按钮.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            发送代码按钮.Location = new Point(413, 342);
+            发送代码按钮.Name = "发送代码按钮";
+            发送代码按钮.Size = new Size(75, 23);
+            发送代码按钮.TabIndex = 15;
+            发送代码按钮.Text = "发送代码";
+            发送代码按钮.UseVisualStyleBackColor = true;
+            发送代码按钮.Click += 发送代码按钮_Click;
+            // 
+            // 代码输入框
+            // 
+            代码输入框.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            代码输入框.Location = new Point(12, 342);
+            代码输入框.Name = "代码输入框";
+            代码输入框.Size = new Size(395, 23);
+            代码输入框.TabIndex = 16;
+            代码输入框.KeyUp += 代码输入框_KeyUp;
+            // 
             // 主窗口
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(497, 377);
+            Controls.Add(代码输入框);
+            Controls.Add(发送代码按钮);
             Controls.Add(选择目录按钮);
             Controls.Add(项目选择框);
             Controls.Add(清除设备代码按钮);
@@ -171,7 +195,7 @@
             MinimumSize = new Size(513, 100);
             Name = "主窗口";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "espjs 图形化工具";
+            Text = "Espruino 助手";
             Load += 主窗口_Load;
             ResumeLayout(false);
             PerformLayout();
@@ -190,5 +214,7 @@
         private Button 清除设备代码按钮;
         private ComboBox 项目选择框;
         private Button 选择目录按钮;
+        private Button 发送代码按钮;
+        private TextBox 代码输入框;
     }
 }

@@ -50,7 +50,7 @@ namespace espjs_gui
             {
                 串口.Open();
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 return null;
             }
@@ -93,7 +93,7 @@ namespace espjs_gui
 
         }
 
-        public static void 将目录写入设备(string 端口, int 波特率, string 项目目录, 回调 消息回调)
+        public static async Task 将目录写入设备(string 端口, int 波特率, string 项目目录, 回调 消息回调)
         {
             // 检测目录是否存在
             if (!Directory.Exists(项目目录))
@@ -106,6 +106,12 @@ namespace espjs_gui
             {
                 消息回调("提示: 项目目录没有检测到[index.js] 可能导致设备无法工作!");
             }
+
+            消息回调("正在检测单片机中内置的模块...\r\n");
+            var 模块列表 = await 串口助手.获取固件中内置的模块(端口, 波特率);
+            消息回调("已内置模块: " + 模块列表 + "\r\n");
+            var 内置模块 = 模块列表.Split(",");
+            var 提取到的模块 = new List<string>();
 
             // 检测端口是否占用
             var 串口 = 打开串口(端口, 波特率);
@@ -153,7 +159,37 @@ namespace espjs_gui
 
                 消息回调("正在写入文件: " + 相对路径);
                 var 内容 = File.ReadAllText(文件路径, Encoding.UTF8);
+                var 当前文件用到的模块 = 提取模块(内容);
+                foreach (var 模块 in 当前文件用到的模块)
+                {
+                    if (内置模块.Contains(模块))
+                    {
+                        // 内置模块不处理
+                        continue;
+                    }
+                    if (File.Exists(项目目录 + 模块))
+                    {
+                        // 自己写的模块也不处理 
+                        continue;
+                    }
+                    // 最后应该剩下在线模块, 这里先加入列表, 后面一起处理
+                    提取到的模块.Add(模块);
+                }
                 写入文件(串口, 相对路径, 内容);
+            }
+            // 提取到的模块去重
+            提取到的模块 = 提取到的模块.Distinct().ToList();
+
+            foreach (var 模块 in 提取到的模块)
+            {
+                if (模块.StartsWith("http:") || 模块.StartsWith("https:"))
+                {
+                    消息回调("暂不支持加载远程模块:  " + 模块);
+                    continue;
+                }
+                var 模块代码 = await 网络助手.获取模块源代码(模块);
+                写入文件(串口, 模块, 模块代码);
+                消息回调("模块 " + 模块 + " 写入完成! ");
             }
             消息回调("全部文件写入完成! ");
             重启设备(串口);
@@ -251,6 +287,114 @@ namespace espjs_gui
                 }
             }
             return 返回值;
+        }
+
+        public static async Task<bool>? 检测固件是否正常(string 端口, int 波特率)
+        {
+            var 检测结果 = await 获取代码的执行结果(端口, 波特率, "console.log('hello')");
+            if (检测结果.Trim() == "hello")
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public static async Task<string> 获取代码的执行结果(string 端口, int 波特率, string 代码)
+        {
+            return await Task.Run(() =>
+            {
+                var 串口 = 打开串口(端口, 波特率);
+                if (串口 == null)
+                {
+                    return "";
+                }
+                var 返回结果 = "";
+                串口.DataReceived += new SerialDataReceivedEventHandler((sender, e) =>
+                   {
+                       if (!串口.IsOpen)
+                       {
+                           return;
+                       }
+                       try
+                       {
+                           var 数据 = 串口.ReadLine().Trim();
+                           if (数据 == 代码 || 数据 == "" || 数据 == "=undefined")
+                           {
+                               return;
+                           }
+                           else
+                           {
+                               返回结果 = 返回结果.Trim() + "\r\n" + 数据;
+                           }
+                       }
+                       catch (Exception)
+                       {
+
+                       }
+
+                   });
+                串口.WriteLine(代码);
+                Thread.Sleep(1000);
+                串口.Close();
+                return 返回结果.Trim();
+            });
+        }
+
+        public static async Task<string> 获取固件中内置的模块(string 串口号, int 波特率)
+        {
+            var 代码 = "console.log(process.env.MODULES)";
+            string 单片机返回结果 = await 获取代码的执行结果(串口号, 波特率, 代码);
+            return 单片机返回结果;
+        }
+
+        public static string[] 提取模块(string 代码)
+        {
+            var 正则 = new Regex("require\\(['\"](.*?)['\"]\\)");
+            var 匹配结果 = 正则.Matches(代码);
+            var 模块列表 = new List<string>();
+            foreach (var 匹配结果项 in 匹配结果)
+            {
+                var 模块名 = 匹配结果项.ToString()
+                    .Replace("require('", "")
+                    .Replace("')", "")
+                    .Replace("require(\"", "")
+                    .Replace("\")", "");
+                if (!模块列表.Contains(模块名))
+                {
+                    模块列表.Add(模块名);
+                }
+            }
+            return 模块列表.ToArray();
+        }
+
+        public static async void 下载并写入模块(SerialPort 串口, string[] 模块列表)
+        {
+            var 默认配置 = 配置.加载配置();
+            var 模块地址 = 默认配置.Modules;
+
+            foreach (var 模块 in 模块列表)
+            {
+                var 下载地址 = 模块地址.Replace("[name]", 模块);
+                if (模块.StartsWith("http:") || 模块.StartsWith("https:"))
+                {
+                    下载地址 = 模块;
+                }
+                else if (模块.EndsWith(".js"))
+                {
+                    continue;
+                }
+                if (缓存助手.缓存存在(下载地址))
+                {
+                    写入文件(串口, 模块, 缓存助手.读取缓存(下载地址));
+                }
+                else
+                {
+                    var 模块代码 = await 网络助手.获取网页源代码(下载地址);
+                    写入文件(串口, 模块, 模块代码);
+                    缓存助手.写入缓存(下载地址, 模块代码);
+                }
+            }
+
         }
 
         public static void 开发模式(string 端口, string 项目目录)

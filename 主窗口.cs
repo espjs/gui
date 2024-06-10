@@ -163,7 +163,7 @@ namespace espjs_gui
             }
         }
 
-        private void 写入设备按钮_Click(object sender, EventArgs e)
+        private async void 写入设备按钮_Click(object sender, EventArgs e)
         {
             清空日志();
             var 用户配置 = 配置.加载配置();
@@ -171,11 +171,13 @@ namespace espjs_gui
             var 开发板 = 开发板选择框.Text;
             var 波特率 = 用户配置.提取波特率(开发板);
             var 项目目录 = 项目选择框.Text;
-            if (串口号 == "") {
+            if (串口号 == "")
+            {
                 显示日志("请输入或选择串口号\r\n");
                 return;
             }
-            if (开发板 == "") {
+            if (开发板 == "")
+            {
                 显示日志("请输入或选择开发板类型\r\n");
                 return;
             }
@@ -188,9 +190,19 @@ namespace espjs_gui
             {
                 项目目录 += @"\";
             }
-            new Thread(() =>
+
+            显示日志("正在检测固件...\r\n");
+            var 检测结果 = await 串口助手.检测固件是否正常(串口号, 波特率);
+            if (!检测结果)
             {
-                串口助手.将目录写入设备(串口号, 波特率, 项目目录, (消息) =>
+                显示日志("没有检测到固件,请先烧录固件\r\n");
+                return;
+            }
+            显示日志("固件检测已通过\r\n");
+
+            new Thread(async () =>
+            {
+                await 串口助手.将目录写入设备(串口号, 波特率, 项目目录, (消息) =>
                 {
                     显示日志(消息 + "\r\n");
                 });
@@ -198,5 +210,33 @@ namespace espjs_gui
 
         }
 
+        private void 代码输入框_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                发送代码按钮_Click(sender, e);
+            }
+        }
+
+        private void 发送代码按钮_Click(object sender, EventArgs e)
+        {
+            var 用户配置 = 配置.加载配置();
+            var 串口号 = 选择串口.Text;
+            var 开发板 = 开发板选择框.Text;
+            var 波特率 = 用户配置.提取波特率(开发板);
+            if (串口号 == "")
+            {
+                显示日志("请输入或选择串口号\r\n");
+                return;
+            }
+            var 代码 = 代码输入框.Text;
+            显示日志(代码 + "\r\n");
+            Task.Run(async () =>
+            {
+                var 代码执行结果 = await 串口助手.获取代码的执行结果(串口号, 波特率, 代码);
+                显示日志(代码执行结果 + "\r\n");
+            });
+            代码输入框.Text = "";
+        }
     }
 }
