@@ -110,7 +110,7 @@
             label3.Name = "label3";
             label3.Size = new Size(56, 17);
             label3.TabIndex = 6;
-            label3.Text = "项目目录";
+            label3.Text = "项目地址";
             // 
             // 日志文本框
             // 

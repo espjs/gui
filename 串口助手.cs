@@ -52,6 +52,7 @@ namespace espjs_gui
             }
             catch (Exception e)
             {
+                Console.WriteLine(e.ToString());
                 return null;
             }
             return 串口;
@@ -215,6 +216,17 @@ namespace espjs_gui
                 串口.WriteLine(代码块);
                 Thread.Sleep(100);
             }
+        }
+
+        public static void 写入文件(string 端口, int 波特率, string 文件名, string 文件内容, 回调 消息回调)
+        {
+            var 串口 = 打开串口(端口, 波特率);
+            if (串口 == null)
+            {
+                消息回调("串口" + 端口 + "打开失败, 可能被占用了! ");
+                return;
+            }
+            写入文件(串口, 文件名, 文件内容);
         }
 
         public static int 获取字符串长度(string 字符串)
