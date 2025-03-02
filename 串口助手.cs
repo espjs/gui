@@ -61,7 +61,8 @@ namespace espjs_gui
         public static void 清除代码(string 端口, string 开发板类型, 回调 回调函数)
         {
             配置 用户配置 = 配置.加载配置();
-            int 波特率 = 用户配置.提取波特率(开发板类型);
+            //int 波特率 = 用户配置.提取波特率(开发板类型);
+            int 波特率 = 115200;
             new Thread(() =>
             {
 
