@@ -42,6 +42,10 @@
             选择目录按钮 = new Button();
             发送代码按钮 = new Button();
             代码输入框 = new TextBox();
+            重启设备按钮 = new Button();
+            开发模式按钮 = new Button();
+            热更新复选框 = new CheckBox();
+            更新后自动重启复选框 = new CheckBox();
             SuspendLayout();
             // 
             // label1
@@ -115,11 +119,12 @@
             // 日志文本框
             // 
             日志文本框.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            日志文本框.Location = new Point(12, 74);
+            日志文本框.Font = new Font("Consolas", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            日志文本框.Location = new Point(12, 99);
             日志文本框.Multiline = true;
             日志文本框.Name = "日志文本框";
             日志文本框.ScrollBars = ScrollBars.Vertical;
-            日志文本框.Size = new Size(476, 262);
+            日志文本框.Size = new Size(563, 246);
             日志文本框.TabIndex = 10;
             // 
             // 清除设备代码按钮
@@ -154,7 +159,7 @@
             // 发送代码按钮
             // 
             发送代码按钮.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            发送代码按钮.Location = new Point(413, 342);
+            发送代码按钮.Location = new Point(500, 351);
             发送代码按钮.Name = "发送代码按钮";
             发送代码按钮.Size = new Size(75, 23);
             发送代码按钮.TabIndex = 15;
@@ -165,17 +170,65 @@
             // 代码输入框
             // 
             代码输入框.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            代码输入框.Location = new Point(12, 342);
+            代码输入框.Location = new Point(12, 351);
             代码输入框.Name = "代码输入框";
-            代码输入框.Size = new Size(395, 23);
+            代码输入框.Size = new Size(482, 23);
             代码输入框.TabIndex = 16;
             代码输入框.KeyUp += 代码输入框_KeyUp;
+            // 
+            // 重启设备按钮
+            // 
+            重启设备按钮.Location = new Point(494, 12);
+            重启设备按钮.Name = "重启设备按钮";
+            重启设备按钮.Size = new Size(75, 23);
+            重启设备按钮.TabIndex = 17;
+            重启设备按钮.Text = "重启设备";
+            重启设备按钮.UseVisualStyleBackColor = true;
+            重启设备按钮.Click += 重启设备按钮_Click;
+            // 
+            // 开发模式按钮
+            // 
+            开发模式按钮.Location = new Point(494, 43);
+            开发模式按钮.Name = "开发模式按钮";
+            开发模式按钮.Size = new Size(75, 23);
+            开发模式按钮.TabIndex = 18;
+            开发模式按钮.Text = "开发模式";
+            开发模式按钮.UseVisualStyleBackColor = true;
+            开发模式按钮.Click += 开发模式按钮_Click;
+            // 
+            // 热更新复选框
+            // 
+            热更新复选框.AutoSize = true;
+            热更新复选框.Location = new Point(395, 72);
+            热更新复选框.Name = "热更新复选框";
+            热更新复选框.Size = new Size(63, 21);
+            热更新复选框.TabIndex = 19;
+            热更新复选框.Text = "热更新";
+            热更新复选框.UseVisualStyleBackColor = true;
+            热更新复选框.Visible = false;
+            热更新复选框.CheckedChanged += 热更新复选框_CheckedChanged;
+            // 
+            // 更新后自动重启复选框
+            // 
+            更新后自动重启复选框.AutoSize = true;
+            更新后自动重启复选框.Location = new Point(464, 72);
+            更新后自动重启复选框.Name = "更新后自动重启复选框";
+            更新后自动重启复选框.Size = new Size(111, 21);
+            更新后自动重启复选框.TabIndex = 20;
+            更新后自动重启复选框.Text = "更新后自动重启";
+            更新后自动重启复选框.UseVisualStyleBackColor = true;
+            更新后自动重启复选框.Visible = false;
+            更新后自动重启复选框.CheckedChanged += 更新后自动重启复选框_CheckedChanged;
             // 
             // 主窗口
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(497, 377);
+            ClientSize = new Size(584, 386);
+            Controls.Add(更新后自动重启复选框);
+            Controls.Add(热更新复选框);
+            Controls.Add(开发模式按钮);
+            Controls.Add(重启设备按钮);
             Controls.Add(代码输入框);
             Controls.Add(发送代码按钮);
             Controls.Add(选择目录按钮);
@@ -191,8 +244,8 @@
             Controls.Add(label1);
             Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
-            MaximumSize = new Size(513, 800);
-            MinimumSize = new Size(513, 100);
+            MaximumSize = new Size(600, 800);
+            MinimumSize = new Size(600, 200);
             Name = "主窗口";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Espruino 助手";
@@ -216,5 +269,9 @@
         private Button 选择目录按钮;
         private Button 发送代码按钮;
         private TextBox 代码输入框;
+        private Button 重启设备按钮;
+        private Button 开发模式按钮;
+        private CheckBox 热更新复选框;
+        private CheckBox 更新后自动重启复选框;
     }
 }

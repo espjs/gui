@@ -58,10 +58,9 @@ namespace espjs_gui
             return 串口;
         }
 
-        public static void 清除代码(string 端口, string 开发板类型, 回调 回调函数)
+        public static void 清除代码(string 端口, 回调 回调函数)
         {
             配置 用户配置 = 配置.加载配置();
-            //int 波特率 = 用户配置.提取波特率(开发板类型);
             int 波特率 = 115200;
             new Thread(() =>
             {
@@ -127,7 +126,7 @@ namespace espjs_gui
             写入启动文件(串口);
 
             // 读取所有文件
-            var 文件列表 = Directory.GetFiles(项目目录);
+            var 文件列表 = Directory.GetFiles(项目目录, "*", SearchOption.AllDirectories);
             var 忽略文件 = new ArrayList();
             var 默认配置 = 配置.加载配置();
             foreach (var 文件名 in 默认配置.Ignore)
@@ -202,6 +201,11 @@ namespace espjs_gui
         public static void 写入启动文件(SerialPort 串口)
         {
             写入文件(串口, ".bootcde", "require('index.js')");
+        }
+
+        public static void 关闭代码回显(SerialPort 串口)
+        {
+            串口.WriteLine("echo(false);");
         }
 
         public static void 重启设备(SerialPort 串口)
@@ -304,6 +308,7 @@ namespace espjs_gui
 
         public static async Task<bool>? 检测固件是否正常(string 端口, int 波特率)
         {
+            await 获取代码的执行结果(端口, 波特率, "echo(false);");
             var 检测结果 = await 获取代码的执行结果(端口, 波特率, "console.log('hello')");
             if (检测结果.Trim() == "hello")
             {
@@ -312,32 +317,34 @@ namespace espjs_gui
             return false;
         }
 
-        public static async Task<string> 获取代码的执行结果(string 端口, int 波特率, string 代码)
+        public static async Task<string> 获取代码的执行结果(string 端口, int 波特率, string 代码, int 等待时间 = 1000)
         {
             return await Task.Run(() =>
             {
                 var 串口 = 打开串口(端口, 波特率);
                 if (串口 == null)
                 {
-                    return "";
+                    return "串口打开失败!";
                 }
                 var 返回结果 = "";
+                var 数据接收时间 = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
                 串口.DataReceived += new SerialDataReceivedEventHandler((sender, e) =>
                    {
+                       数据接收时间 = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
                        if (!串口.IsOpen)
                        {
                            return;
                        }
                        try
                        {
-                           var 数据 = 串口.ReadLine().Trim();
+                           var 数据 = 串口.ReadLine();
                            if (数据 == 代码 || 数据 == "" || 数据 == "=undefined")
                            {
                                return;
                            }
                            else
                            {
-                               返回结果 = 返回结果.Trim() + "\r\n" + 数据;
+                               返回结果 = 返回结果 + "\r\n" + 数据;
                            }
                        }
                        catch (Exception)
@@ -347,7 +354,10 @@ namespace espjs_gui
 
                    });
                 串口.WriteLine(代码);
-                Thread.Sleep(1000);
+                while (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - 数据接收时间 < 等待时间)
+                {
+                    Thread.Sleep(等待时间);
+                }
                 串口.Close();
                 return 返回结果.Trim();
             });
@@ -410,14 +420,34 @@ namespace espjs_gui
 
         }
 
-        public static void 开发模式(string 端口, string 项目目录)
+        public static SerialPort? 监听串口数据(string 端口, int 波特率, Action<string> 回调函数)
         {
+            var 串口 = 打开串口(端口, 波特率);
+            Task.Run(() =>
+            {
+                if (串口 == null)
+                {
+                    return;
+                }
+                串口.DataReceived += new SerialDataReceivedEventHandler((sender, e) =>
+                {
+                    if (!串口.IsOpen)
+                    {
+                        return;
+                    }
+                    try
+                    {
+                        回调函数(串口.ReadLine());
+                    }
+                    catch (Exception)
+                    {
 
-        }
+                    }
 
-        public static void 发送代码(string 端口, string 代码)
-        {
+                });
+            });
 
+            return 串口;
         }
 
     }
