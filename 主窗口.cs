@@ -283,6 +283,10 @@ namespace espjs_gui
             if (开发模式串口 != null)
             {
                 开发模式串口.WriteLine(代码);
+                Task.Run(() => {
+                    Thread.Sleep(1000);
+                    开发模式串口.WriteLine("echo(false);");
+                });
             }
             else
             {
@@ -364,11 +368,15 @@ namespace espjs_gui
             开发模式按钮.Text = "取消";
             开发模式串口 = 串口助手.监听串口数据(选择串口.Text, 115200, (string 数据) =>
             {
-                if (数据 == ">echo(false);")
+                if (数据.Trim() == "E.reboot();")
                 {
                     return;
                 }
-                显示日志(数据 + "\r\n");
+                if (数据.Trim() == "echo(false);")
+                {
+                    return;
+                }
+                显示日志(数据.Trim() + "\r\n");
             });
             开发模式按钮.Text = "取消";
 
