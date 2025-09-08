@@ -17,7 +17,7 @@ namespace espjs_gui
 
         private void 主窗口_Load(object sender, EventArgs e)
         {
-            日志文本框.Location = new Point(12, 75);
+            //日志文本框.Location = new Point(12, 75);
             刷新串口();
             if (选择串口.Items.Count >= 1)
             {
@@ -91,7 +91,7 @@ namespace espjs_gui
 
         public void 显示日志(string 日志)
         {
-            if (Thread.CurrentThread.ManagedThreadId != 1) // 确保使用相同的线程 ID
+            if (Environment.CurrentManagedThreadId != 1) // 确保使用相同的线程 ID
             {
                 this.Invoke((MethodInvoker)delegate
                 {
@@ -364,7 +364,7 @@ namespace espjs_gui
             选择目录按钮.Enabled = false;
             热更新复选框.Visible = true;
             更新后自动重启复选框.Visible = true;
-            日志文本框.Location = new Point(12, 100);
+            // 日志文本框.Location = new Point(12, 100);
             开发模式按钮.Text = "取消";
             开发模式串口 = 串口助手.监听串口数据(选择串口.Text, 115200, (string 数据) =>
             {
@@ -412,7 +412,7 @@ namespace espjs_gui
             写入设备按钮.Enabled = true;
             热更新复选框.Visible = false;
             更新后自动重启复选框.Visible = false;
-            日志文本框.Location = new Point(12, 75);
+            // 日志文本框.Location = new Point(12, 75);
             开发模式按钮.Text = "开发模式";
             if (开发模式串口 != null && 开发模式串口.IsOpen)
             {

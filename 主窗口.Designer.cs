@@ -46,6 +46,7 @@
             开发模式按钮 = new Button();
             热更新复选框 = new CheckBox();
             更新后自动重启复选框 = new CheckBox();
+            label4 = new Label();
             SuspendLayout();
             // 
             // label1
@@ -118,13 +119,12 @@
             // 
             // 日志文本框
             // 
-            日志文本框.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             日志文本框.Font = new Font("Consolas", 9F, FontStyle.Regular, GraphicsUnit.Point);
             日志文本框.Location = new Point(12, 99);
             日志文本框.Multiline = true;
             日志文本框.Name = "日志文本框";
             日志文本框.ScrollBars = ScrollBars.Vertical;
-            日志文本框.Size = new Size(563, 246);
+            日志文本框.Size = new Size(563, 321);
             日志文本框.TabIndex = 10;
             // 
             // 清除设备代码按钮
@@ -159,7 +159,7 @@
             // 发送代码按钮
             // 
             发送代码按钮.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            发送代码按钮.Location = new Point(500, 351);
+            发送代码按钮.Location = new Point(500, 426);
             发送代码按钮.Name = "发送代码按钮";
             发送代码按钮.Size = new Size(75, 23);
             发送代码按钮.TabIndex = 15;
@@ -170,7 +170,7 @@
             // 代码输入框
             // 
             代码输入框.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            代码输入框.Location = new Point(12, 351);
+            代码输入框.Location = new Point(12, 426);
             代码输入框.Name = "代码输入框";
             代码输入框.Size = new Size(482, 23);
             代码输入框.TabIndex = 16;
@@ -220,11 +220,21 @@
             更新后自动重启复选框.Visible = false;
             更新后自动重启复选框.CheckedChanged += 更新后自动重启复选框_CheckedChanged;
             // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Location = new Point(12, 77);
+            label4.Name = "label4";
+            label4.Size = new Size(56, 17);
+            label4.TabIndex = 21;
+            label4.Text = "日志输出";
+            // 
             // 主窗口
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(584, 386);
+            ClientSize = new Size(584, 461);
+            Controls.Add(label4);
             Controls.Add(更新后自动重启复选框);
             Controls.Add(热更新复选框);
             Controls.Add(开发模式按钮);
@@ -244,8 +254,8 @@
             Controls.Add(label1);
             Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
-            MaximumSize = new Size(600, 800);
-            MinimumSize = new Size(600, 200);
+            MaximumSize = new Size(600, 500);
+            MinimumSize = new Size(600, 500);
             Name = "主窗口";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Espruino 助手";
@@ -273,5 +283,6 @@
         private Button 开发模式按钮;
         private CheckBox 热更新复选框;
         private CheckBox 更新后自动重启复选框;
+        private Label label4;
     }
 }
